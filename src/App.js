@@ -1,79 +1,57 @@
-import React, { useState } from "react";
-import "./App.css";
+import React, { useState } from 'react';
+import TodoList from './components/TodoList';
+import { FaPlus } from 'react-icons/fa';
+import './App.css';
 
 function App() {
-  const [users, setUsers] = useState([]);
-  const [name, setName] = useState("");
-  const [avatar, setAvatar] = useState(null);
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [todos, setTodos] = useState([]);
+  const [task, setTask] = useState('');
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setAvatar(imageUrl);
+  const handleAdd = () => {
+    if (task.trim() !== '') {
+      const newTask = { id: Date.now(), text: task, isEditing: false };
+      setTodos([...todos, newTask]);
+      setTask('');
     }
   };
 
-  const handleAddUser = () => {
-    if (!name.trim() || !avatar) return;
-
-    const newUser = { name, avatar };
-
-    if (editingIndex !== null) {
-      const updated = [...users];
-      updated[editingIndex] = newUser;
-      setUsers(updated);
-      setEditingIndex(null);
-    } else {
-      setUsers([...users, newUser]);
-    }
-
-    setName("");
-    setAvatar(null);
-    document.getElementById("avatar").value = null;
+  const handleDelete = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  const handleEdit = (index) => {
-    setName(users[index].name);
-    setAvatar(users[index].avatar);
-    setEditingIndex(index);
+  const toggleEdit = (id, status) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, isEditing: status } : todo
+    ));
   };
 
-  const handleDelete = (index) => {
-    const updated = users.filter((_, i) => i !== index);
-    setUsers(updated);
+  const handleEditChange = (id, newText) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, text: newText } : todo
+    ));
   };
 
   return (
-    <div className="App">
-      <h2>React CRUD with Avatar</h2>
-      <div className="form">
+    <div className="app-container">
+      <h1 className="title">To-Do App 📝</h1>
+      <div className="input-group">
         <input
           type="text"
-          placeholder="Enter name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter a task"
+          value={task}
+          onChange={(e) => setTask(e.target.value)}
         />
-        <input id="avatar" type="file" accept="image/*" onChange={handleImageChange} />
-        <button onClick={handleAddUser}>
-          {editingIndex !== null ? "Update User" : "Add User"}
+        <button onClick={handleAdd} className="add-btn">
+          <FaPlus />
         </button>
       </div>
 
-      <ul className="user-list">
-        {users.map((user, index) => (
-          <li key={index}>
-            <span className="index">{index + 1}.</span>
-            <img src={user.avatar} alt="avatar" className="avatar" />
-            <span className="username">{user.name}</span>
-            <div>
-              <button className="edit" onClick={() => handleEdit(index)}>Edit</button>
-              <button className="delete" onClick={() => handleDelete(index)}>Delete</button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <TodoList
+        todos={todos}
+        handleDelete={handleDelete}
+        toggleEdit={toggleEdit}
+        handleEditChange={handleEditChange}
+      />
     </div>
   );
 }
