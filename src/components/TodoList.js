@@ -1,7 +1,7 @@
 import React from 'react';
 import TodoItem from './TodoItem';
 
-function TodoList({ todos, handleDelete, toggleEdit, handleEditChange }) {
+function TodoList({ todos, handleDelete, toggleEdit, handleEditChange, toggleComplete, changePriority }) {
   return (
     <ul className="todo-list">
       {todos.map((todo, index) => (
@@ -12,6 +12,8 @@ function TodoList({ todos, handleDelete, toggleEdit, handleEditChange }) {
           handleDelete={handleDelete}
           toggleEdit={toggleEdit}
           handleEditChange={handleEditChange}
+          toggleComplete={toggleComplete}
+          changePriority={changePriority}
         />
       ))}
     </ul>
